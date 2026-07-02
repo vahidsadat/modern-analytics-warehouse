@@ -1,0 +1,23 @@
+# .pre-commit-config.yaml
+repos:
+  # 1. Keep your uv.lock file fresh automatically
+  - repo: https://github.com/astral-sh/uv-pre-commit
+    rev: 0.11.26
+    hooks:
+      - id: uv-lock
+
+  # 2. Let Ruff lint and format your code before committing
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.11.26
+    hooks:
+      - id: ruff
+        args: [ --fix ]  # Auto-fixes simple lint errors on commit
+      - id: ruff-format  # Replaces Black
+
+  # 3. Type Checking
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v1.14.1
+    hooks:
+      - id: mypy
+        # If your project uses external libraries, tell mypy to read your uv environment
+        additional_dependencies: []
