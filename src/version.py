@@ -30,9 +30,9 @@ def bump_version(action: str) -> None:
     if action == "major":
         major += 1 ;minor = 0 ; patch = 0
     elif action == "minor":
-        major = 0 ;minor += 1 ; patch = 0
+        minor += 1 ; patch = 0
     elif action == "patch":
-        major = 0 ;minor = 0 ; patch += 1
+        patch += 1
     else:
         print("Invalid action, choose major, minor or patch!")
         sys.exit(1)

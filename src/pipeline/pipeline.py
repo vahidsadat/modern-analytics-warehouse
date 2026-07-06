@@ -11,7 +11,8 @@ class PipelineConnector:
 
 
         if not(self.input_data):
-            logger.info("There is no input data")
+            logger.error("There is no input data")
+        
 
 
     def run(self) -> None:
