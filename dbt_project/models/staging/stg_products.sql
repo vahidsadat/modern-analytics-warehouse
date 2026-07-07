@@ -1,5 +1,5 @@
 with source as (
-    select * from warehouse.products
+    select * from {{ source('raw', 'products') }}
 ),
 
 renamed as (

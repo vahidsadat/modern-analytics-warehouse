@@ -1,5 +1,5 @@
 with source as (
-    select * from warehouse.web_sessions
+    select * from {{ source('raw', 'web_sessions') }}
 ),
 
 renamed as (
