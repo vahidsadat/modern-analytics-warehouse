@@ -7,3 +7,48 @@ models:
         test:
           - unique
           - not_null
+
+
+  - name: stg_products
+    columns:
+      - name: product_id
+        test:
+          - unique
+          - not_null
+
+          
+  - name: stg_orders
+    columns:
+      - name: order_id
+        test:
+          - unique
+          - not_null
+
+          
+  - name: stg_order_items
+    columns:
+      - name: order_item_id
+        test:
+          - unique
+          - not_null
+
+
+          
+  - name: stg_payments
+    columns:
+      - name: payment_id
+        test:
+          - unique
+          - not_null
+
+
+          
+  - name: stg_web_sessions
+    columns:
+      - name: session_id
+        test:
+          - unique
+          - not_null
+
+  - name: stg_marketing_spend
+    
