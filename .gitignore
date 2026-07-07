@@ -1,2 +1,15 @@
-.venv
 .env
+.venv/
+# Python cache
+__pycache__/
+**/__pycache__/
+*.py[cod]
+*$py.class
+
+target/
+dbt_packages/
+logs/
+
+.DS_Store
+.vscode/
+profiles.yml

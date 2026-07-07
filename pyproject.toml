@@ -8,7 +8,9 @@ dependencies = [
     "setuptools",
     "psycopg2",
     "python-dotenv",
-    "sqlalchemy"
+    "sqlalchemy",
+    "dbt-core",
+    "dbt-postgres"
 ]
 
 [dependency-groups]
