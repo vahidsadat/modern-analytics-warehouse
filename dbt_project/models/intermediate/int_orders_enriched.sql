@@ -1,5 +1,5 @@
 with orders as (
-    select order_id, customer_id,order_date as  order_created_at, order_status, shipping_country, shipping_city, shipping_fee
+    select order_id, customer_id,order_created_at, order_date, order_status, shipping_country, shipping_city, shipping_fee
     from {{ ref('stg_orders') }}
 ),
 
@@ -34,6 +34,7 @@ joined as (
         orders.order_id,
         orders.customer_id,
         orders.order_created_at,
+        orders.order_date,
         orders.order_status,
         orders.shipping_country, 
         orders.shipping_city, 
