@@ -130,18 +130,18 @@ select
     coalesce(product_metrics.gross_margin, 0) as gross_margin,
 
     round(
-        coalesce(product_metrics.gross_margin, 0)::numeric
+        (coalesce(product_metrics.gross_margin, 0)
         / nullif(product_metrics.net_revenue, 0)
-        * 100,
+        * 100)::numeric,
         2
     ) as gross_margin_percentage,
 
     coalesce(product_metrics.return_count, 0) as return_count,
 
     round(
-        coalesce(product_metrics.return_count, 0)::numeric
+        (coalesce(product_metrics.return_count, 0)
         / nullif(product_metrics.total_orders, 0)
-        * 100,
+        * 100)::numeric,
         2
     ) as return_rate
 
