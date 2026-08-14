@@ -35,7 +35,7 @@ Build a modern analytics warehouse that turns raw CSV source data into reliable 
 - fact_order_items
 - fact_payments
 - fact_web_sessions
-- fact_marketing_spend
+- fact_marketing_spends
 - mart_daily_sales
 - mart_customer_lifetime_value
 - mart_product_performance

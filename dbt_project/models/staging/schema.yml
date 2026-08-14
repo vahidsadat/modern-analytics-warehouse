@@ -50,5 +50,5 @@ models:
           - unique
           - not_null
 
-  - name: stg_marketing_spend
+  - name: stg_marketing_spends
     

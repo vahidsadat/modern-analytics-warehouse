@@ -61,7 +61,8 @@ with orders as(
                 then 1
                 else 0
             end
-        )*100.0 / nullif(count(order_id),0) )::numeric, 2) as cancellation_rate
+        )*100.0 / nullif(count(order_id),0) )::numeric, 2) as cancellation_rate,
+        round(sum(case when is_paid_order then paid_amount else 0 end)::numeric, 2) as paid_revenue
     from {{ ref('fact_orders')}}
     group by order_date
 )

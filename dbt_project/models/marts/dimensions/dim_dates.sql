@@ -15,7 +15,7 @@ web_sessions as (
 
 marketing_spend as (
     select cast(spend_date as date) as date_key
-    from {{ ref('fact_marketing_spend')}} 
+    from {{ ref('fact_marketing_spends')}} 
 ),
 
 combine_dates as (

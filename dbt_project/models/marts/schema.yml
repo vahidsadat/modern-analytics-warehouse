@@ -1,0 +1,457 @@
+version: 2
+
+models:
+  - name: dim_customers
+    description: "Customer dimension table with customer profile information and lifetime order metrics."
+    columns:
+      - name: customer_id
+        tests:
+          - unique
+          - not_null
+
+      - name: email
+        tests:
+          - not_null
+
+      - name: acquisition_channel
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['organic', 'paid_search', 'paid_social', 'email', 'affiliate', 'direct']
+
+      - name: signup_date
+        tests:
+          - not_null
+
+  - name: dim_products
+    description: "Product dimension table with product catalogue information."
+    columns:
+      - name: product_id
+        tests:
+          - unique
+          - not_null
+
+      - name: sku
+        tests:
+          - unique
+          - not_null
+
+      - name: product_name
+        tests:
+          - not_null
+
+      - name: category
+        tests:
+          - not_null
+
+      - name: brand
+        tests:
+          - not_null
+
+      - name: unit_cost
+        tests:
+          - not_null
+
+      - name: list_price
+        tests:
+          - not_null
+
+  - name: dim_dates
+    description: "Calendar dimension table used for date-based reporting and filtering."
+    columns:
+      - name: date_day
+        tests:
+          - unique
+          - not_null
+
+      - name: year
+        tests:
+          - not_null
+
+      - name: month
+        tests:
+          - not_null
+
+      - name: day_of_week
+        tests:
+          - not_null
+
+      - name: is_weekend
+        tests:
+          - not_null
+
+  - name: fact_orders
+    description: "Order-level fact table with revenue, payment, cost, margin, and order status information."
+    columns:
+      - name: order_id
+        tests:
+          - unique
+          - not_null
+
+      - name: customer_id
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_customers')
+              field: customer_id
+
+      - name: order_date
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_dates')
+              field: date_day
+
+      - name: order_status
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['completed', 'cancelled', 'returned']
+
+      - name: sales_channel
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['web', 'mobile_app', 'marketplace']
+
+      - name: net_revenue
+        tests:
+          - not_null
+
+      - name: paid_amount
+        tests:
+          - not_null
+
+      - name: gross_margin
+        tests:
+          - not_null
+
+  - name: fact_order_items
+    description: "Order-item-level fact table with product-level order details, revenue, cost, and margin."
+    columns:
+      - name: order_item_id
+        tests:
+          - unique
+          - not_null
+
+      - name: order_id
+        tests:
+          - not_null
+          - relationships:
+              to: ref('fact_orders')
+              field: order_id
+
+      - name: customer_id
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_customers')
+              field: customer_id
+
+      - name: product_id
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_products')
+              field: product_id
+
+      - name: quantity
+        tests:
+          - not_null
+
+      - name: net_revenue
+        tests:
+          - not_null
+
+      - name: total_cost
+        tests:
+          - not_null
+
+      - name: gross_margin
+        tests:
+          - not_null
+
+  - name: fact_payments
+    description: "Payment fact table with one row per payment transaction."
+    columns:
+      - name: payment_id
+        tests:
+          - unique
+          - not_null
+
+      - name: order_id
+        tests:
+          - not_null
+          - relationships:
+              to: ref('fact_orders')
+              field: order_id
+
+      - name: payment_status
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['paid', 'failed', 'refunded']
+
+      - name: payment_method
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['card', 'paypal', 'klarna', 'bank_transfer']
+
+      - name: amount
+        tests:
+          - not_null
+
+  - name: fact_web_sessions
+    description: "Web session fact table with traffic source, device, and engagement information."
+    columns:
+      - name: session_id
+        tests:
+          - unique
+          - not_null
+
+      - name: customer_id
+        tests:
+          - relationships:
+              to: ref('dim_customers')
+              field: customer_id
+
+      - name: session_date
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_dates')
+              field: date_day
+
+      - name: source_channel
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['organic', 'paid_search', 'paid_social', 'email', 'affiliate', 'direct']
+
+      - name: device_type
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['desktop', 'mobile', 'tablet']
+
+  - name: fact_marketing_spend
+    description: "Marketing spend fact table with spend, impressions, and clicks by date, channel, and campaign."
+    columns:
+      - name: spend_date
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_dates')
+              field: date_day
+
+      - name: channel
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['paid_search', 'paid_social', 'email', 'affiliate']
+
+      - name: campaign_name
+        tests:
+          - not_null
+
+      - name: spend_eur
+        tests:
+          - not_null
+
+      - name: impressions
+        tests:
+          - not_null
+
+      - name: clicks
+        tests:
+          - not_null
+
+  - name: mart_daily_sales
+    description: "Daily sales mart with order counts, revenue, cost, margin, and operational rates."
+    columns:
+      - name: order_date
+        tests:
+          - unique
+          - not_null
+          - relationships:
+              to: ref('dim_dates')
+              field: date_day
+
+      - name: total_orders
+        tests:
+          - not_null
+
+      - name: completed_orders
+        tests:
+          - not_null
+
+      - name: cancelled_orders
+        tests:
+          - not_null
+
+      - name: returned_orders
+        tests:
+          - not_null
+
+      - name: net_revenue
+        tests:
+          - not_null
+
+      - name: paid_revenue
+        tests:
+          - not_null
+
+      - name: gross_margin
+        tests:
+          - not_null
+
+  - name: mart_customer_lifetime_value
+    description: "Customer lifetime value mart with customer profile, order history, revenue, margin, and value segment."
+    columns:
+      - name: customer_id
+        tests:
+          - unique
+          - not_null
+          - relationships:
+              to: ref('dim_customers')
+              field: customer_id
+
+      - name: acquisition_channel
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['organic', 'paid_search', 'paid_social', 'email', 'affiliate', 'direct']
+
+      - name: total_orders
+        tests:
+          - not_null
+
+      - name: completed_orders
+        tests:
+          - not_null
+
+      - name: lifetime_net_revenue
+        tests:
+          - not_null
+
+      - name: lifetime_paid_revenue
+        tests:
+          - not_null
+
+      - name: lifetime_gross_margin
+        tests:
+          - not_null
+
+      - name: customer_segment
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['No Purchase', 'Low Value', 'Regular', 'High Value', 'VIP']
+
+  - name: mart_product_performance
+    description: "Product performance mart with product-level sales, revenue, cost, margin, and return metrics."
+    columns:
+      - name: product_id
+        tests:
+          - unique
+          - not_null
+          - relationships:
+              to: ref('dim_products')
+              field: product_id
+
+      - name: sku
+        tests:
+          - not_null
+
+      - name: product_name
+        tests:
+          - not_null
+
+      - name: category
+        tests:
+          - not_null
+
+      - name: total_quantity_sold
+        tests:
+          - not_null
+
+      - name: total_orders
+        tests:
+          - not_null
+
+      - name: net_revenue
+        tests:
+          - not_null
+
+      - name: gross_margin
+        tests:
+          - not_null
+
+      - name: return_count
+        tests:
+          - not_null
+
+      - name: return_rate
+        tests:
+          - not_null
+
+  - name: mart_marketing_roi
+    description: "Marketing ROI mart comparing marketing spend with orders, revenue, paid revenue, and gross margin by date and channel."
+    columns:
+      - name: spend_date
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_dates')
+              field: date_day
+
+      - name: channel
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['paid_search', 'paid_social', 'email', 'affiliate']
+
+      - name: spend_eur
+        tests:
+          - not_null
+
+      - name: impressions
+        tests:
+          - not_null
+
+      - name: clicks
+        tests:
+          - not_null
+
+      - name: completed_orders
+        tests:
+          - not_null
+
+      - name: net_revenue
+        tests:
+          - not_null
+
+      - name: paid_revenue
+        tests:
+          - not_null
+
+      - name: gross_margin
+        tests:
+          - not_null
+
+      - name: cost_per_click
+        tests:
+          - not_null
+
+      - name: conversion_rate
+        tests:
+          - not_null
+
+      - name: roas
+        tests:
+          - not_null
+
+      - name: marketing_roi
+        tests:
+          - not_null
